@@ -2,11 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a0ec3a5d-9bf9-4b7f-8ed5-88a4f0872ecc" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/fjps/main/graph/Vertex.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/fjps/main/graph/exceptions/NoDirectEdgeException.java" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/com/fjps/graph/Vertex.java" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/com/fjps/Main.java" afterPath="$PROJECT_DIR$/src/com/fjps/main/Main.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/com/fjps/graph/Graph.java" afterPath="$PROJECT_DIR$/src/com/fjps/main/graph/Graph.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="Lista 1.iws" />
@@ -507,7 +502,13 @@
       <option name="project" value="LOCAL" />
       <updated>1458232757376</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="new method push test: Graph &amp; Vertex mocks.">
+      <created>1458236408429</created>
+      <option name="number" value="00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1458236408429</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="ToolWindowManager">
