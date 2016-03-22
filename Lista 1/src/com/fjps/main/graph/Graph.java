@@ -4,7 +4,7 @@ import com.fjps.main.graph.exceptions.InvalidVertexIDException;
 import com.fjps.main.graph.exceptions.NoSuchVertexException;
 import com.fjps.main.graph.exceptions.VertexDuplicateException;
 
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * Class of whole graph. I assume that graph is not directed.
@@ -51,9 +51,9 @@ public class Graph<T extends Number> {
         if (!hasVertex(v))
             throw new NoSuchVertexException(v);
 
-        v = vertexes.get(v.getID()); // to ensure that v is vertex from a graph, not an alien clone
+        v = vertexes.get(v.getID()); // to ensure that v is a vertex from a graph, not an alien clone
 
-        for (Vertex neighbour : v.getNeighbourhood().keySet())
+        for (Vertex<T> neighbour : new HashSet<>(v.getNeighbourhood().keySet()))
             v.removeConnectionTo(neighbour);
         vertexes.remove(v.getID());
     }
@@ -80,8 +80,8 @@ public class Graph<T extends Number> {
         return vertexes.get(id);
     }
 
-    public Vertex<T>[] getAllVertexes() {
-        return (Vertex<T>[]) vertexes.values().toArray();
+    public List<Vertex<T>> getAllVertexes() {
+        return new LinkedList<>(vertexes.values());
     }
 
     public void connect(Vertex<T> v1, Vertex<T> v2, T distance) throws NoSuchVertexException {
@@ -115,29 +115,21 @@ public class Graph<T extends Number> {
         //TODO 3. dla każdej pary wierzchołków krawędź pomiędzy nimi powinna być równa najkrótszej ścieżce.
         // (Jeżeli bezpośrednia krawędź jest dłuższa od najkrótszej ścieżki - należy zmienić wartość krawędzi na wartość
         // najkrótszej ścieżki)
+
+        // Metoda powinna być wywoływana po dodaniu wszystkich wierzchołków.
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder("Graph object containing:\n");
 
-        if (vertexes.size() <= 16) {
-            for (Vertex<T> v : vertexes.values()) {
-                builder.append(v).append(":\n");
-                v.getNeighbourhood().entrySet().stream()
-                        .forEach(neighbourEntry -> builder
-                                .append("    ")
-                                .append(v)
-                                .append("->")
-                                .append(neighbourEntry.getKey())
-                                .append(" (")
-                                .append(neighbourEntry.getValue())
-                                .append(")\n"));
-            }
-        } else {
+        if (vertexes.size() <= 16)
+            vertexes.values().stream()
+                    .forEach(v -> builder.append(v).append("\n"));
+        else
             vertexes.keySet().stream()
                     .forEach(id -> builder.append(", ").append(id));
-        }
+
 
         return builder.toString();
     }

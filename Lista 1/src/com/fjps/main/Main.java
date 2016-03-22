@@ -23,16 +23,16 @@ public class Main {
         Vertex<Double> v3 = exampleGraph.addVertex();
 
         try {
-            exampleGraph.connect(v0, v0, 3.0);
-            exampleGraph.connect(v0, v2, 3.0);
-            exampleGraph.connect(v0, v3, 3.0);
-            exampleGraph.connect(v2, v1, 3.0);
-            exampleGraph.connect(v2, v3, 3.0);
+            exampleGraph.connect(v0, v1, 3.0);
+            exampleGraph.connect(v0, v2, 1.8);
+            exampleGraph.connect(v0, v3, 2.2);
+            exampleGraph.connect(v2, v1, 4.7);
+            exampleGraph.connect(v2, v3, 5.2);
         } catch (NoSuchVertexException e) {
             System.out.println("This exception should not occur.\n\t" + e.getMessage());
         }
 
-        System.out.println("Result: " + exampleGraph);
+        System.out.println("Result:\n" + exampleGraph);
 
         try {
             exampleGraph.removeVertex(v1);
@@ -40,8 +40,8 @@ public class Main {
             System.out.println("This exception should not occur.\n\t" + e.getMessage());
         }
 
-        System.out.println("Remover vertex V1");
-        System.out.println("Result: " + exampleGraph);
+        System.out.println("Removing vertex V1");
+        System.out.println("Result:\n" + exampleGraph);
 
     }
 }
