@@ -10,6 +10,6 @@ import com.fjps.main.graph.Vertex;
 public class NoDirectEdgeException extends RuntimeException {
 
     public NoDirectEdgeException(Vertex v1, Vertex v2) {
-        super("There is no edge between " + v1 + " and " + v2);
+        super("There is no edge between " + v1.getID() + " and " + v2.getID());
     }
 }
