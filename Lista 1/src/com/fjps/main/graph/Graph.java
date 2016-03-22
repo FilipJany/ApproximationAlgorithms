@@ -23,7 +23,7 @@ public class Graph<T extends Number> {
         vertexes = new HashMap<>();
     }
 
-    public String addVertex() {
+    public Vertex<T> addVertex() {
         Vertex<T> v;
         int diff = 0;
 
@@ -32,17 +32,19 @@ public class Graph<T extends Number> {
         } while (vertexes.containsKey(v.getID()));
 
         vertexes.put(v.getID(), v);
-        return v.getID();
+        return v;
     }
 
-    public String addVertex(String id) throws InvalidVertexIDException, VertexDuplicateException {
+    public Vertex<T> addVertex(String id) throws InvalidVertexIDException, VertexDuplicateException {
         if (id.trim().equals(""))
             throw new InvalidVertexIDException("<some white characters>");
         if (vertexes.containsKey(id))
             throw new VertexDuplicateException(id);
 
-        vertexes.put(id, new Vertex<>(id));
-        return id;
+        Vertex<T> v = new Vertex<>(id);
+
+        vertexes.put(id, v);
+        return v;
     }
 
     public void removeVertex(Vertex<T> v) throws InvalidVertexIDException, NoSuchVertexException {
@@ -94,11 +96,25 @@ public class Graph<T extends Number> {
         v1.addConnectionTo(v2, distance);
     }
 
+    public void disconnect(Vertex<T> v1, Vertex<T> v2) throws NoSuchVertexException {
+        if (!hasVertex(v1))
+            throw new NoSuchVertexException(v1);
+        if (!hasVertex(v2))
+            throw new NoSuchVertexException(v2);
+
+        v1 = vertexes.get(v1.getID());
+        v2 = vertexes.get(v2.getID());
+
+        v1.removeConnectionTo(v2);
+    }
+
     public void assureMetric() {
-        //TODO 1. upewnić się, że graf jest pełny (uzupełnić brakujące krawędzie)
-        //TODO 2. dla każdej pary wierzchołków krawędź pomiędzy nimi powinna być równa najkrótszej ścieżce.
-        // Jeżeli bezpośrednia krawędź jest dłuższa od najkrótszej ścieżki - należy zmienić wartość krawędzi na wartość
-        // najkrótszej ścieżki.
+        //TODO 1. Graf MUSI być spójny
+        //TODO 2. upewnić się, że graf jest pełny
+        // (uzupełnić brakujące krawędzie najkrótszymi ścieżkami pomiędzy parami wierzchołków)
+        //TODO 3. dla każdej pary wierzchołków krawędź pomiędzy nimi powinna być równa najkrótszej ścieżce.
+        // (Jeżeli bezpośrednia krawędź jest dłuższa od najkrótszej ścieżki - należy zmienić wartość krawędzi na wartość
+        // najkrótszej ścieżki)
     }
 
     @Override
