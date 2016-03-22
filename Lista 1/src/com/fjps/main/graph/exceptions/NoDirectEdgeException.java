@@ -5,7 +5,7 @@ import com.fjps.main.graph.Vertex;
 /**
  * Exception representing case of direct edge lack between some nodes.
  *
- * Created by MagnaT on 17/03/16.
+ * Created by Patryk Stopyra on 17/03/16.
  */
 public class NoDirectEdgeException extends RuntimeException {
 

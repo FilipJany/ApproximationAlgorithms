@@ -13,7 +13,7 @@ import java.util.*;
  * Every vertex has its own, unique id.
  * It can be managed from the <code>Graph</code> object by id or by <code>Vertex</code> object itself.
  * <p>
- * Created by MagnaT on 17/03/16.
+ * Created by Patryk Stopyra on 17/03/16.
  */
 public class Graph<T extends Number> {
 

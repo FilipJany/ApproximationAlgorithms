@@ -3,7 +3,7 @@ package com.fjps.main.calculation;
 import com.fjps.main.graph.Graph;
 
 /**
- * Created by MagnaT on 22/03/16.
+ * Created by Patryk Stopyra on 22/03/16.
  */
 public class TSPExactSolver<T extends Number> implements TravellingSalesmanProblemSolver<T> {
 

@@ -3,7 +3,9 @@ package com.fjps.main.calculation;
 import com.fjps.main.graph.Graph;
 
 /**
- * Created by MagnaT on 22/03/16.
+ * Implementation of Christofies algorithm.
+ *
+ * Created by Patryk Stopyra on 22/03/16.
  */
 public class TSPOneHalfEstimator<T extends Number> implements TravellingSalesmanProblemSolver<T> {
 

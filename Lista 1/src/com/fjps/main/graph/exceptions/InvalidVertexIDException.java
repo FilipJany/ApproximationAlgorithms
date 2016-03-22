@@ -1,7 +1,7 @@
 package com.fjps.main.graph.exceptions;
 
 /**
- * Created by MagnaT on 22/03/16.
+ * Created by Patryk Stopyra on 22/03/16.
  */
 public class InvalidVertexIDException extends RuntimeException {
 
