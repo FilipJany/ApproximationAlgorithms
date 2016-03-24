@@ -12,10 +12,10 @@ import java.util.HashMap;
  * <p>
  * Created by Patryk Stopyra on 17/03/16.
  */
-public class Vertex<T> {
+public class Vertex<T extends Number> {
 
     private final String id;
-    private final HashMap<Vertex, T> neighbourhood;
+    private final HashMap<Vertex, Edge<T>> neighbourhood;
 
     public Vertex(String id) {
         this.id = id;
@@ -31,33 +31,48 @@ public class Vertex<T> {
         return neighbourhood.containsKey(v);
     }
 
-    public T getEdgeCost(Vertex v) throws NoDirectEdgeException {
+    public Edge<T> getEdge(Vertex v) throws NoDirectEdgeException {
         if (!hasDirectConnection(v))
             throw new NoDirectEdgeException(this, v);
 
         return neighbourhood.get(v);
     }
 
-    public void addConnectionTo(Vertex<T> v, T distance) {
-        this.neighbourhood.put(v, distance); // we override existing path, ignoring ratio of existing/previous distance
-        v.neighbourhood.put(this, distance);
+    public T getEdgeCost(Vertex v) throws NoDirectEdgeException {
+        if (!hasDirectConnection(v))
+            throw new NoDirectEdgeException(this, v);
+
+        return neighbourhood.get(v).getWeight();
     }
 
-    public void removeConnectionTo(Vertex v) throws NoDirectEdgeException {
+    public Edge<T> addConnectionTo(Vertex<T> v, T distance) {
+        Edge<T> newEdge = new Edge<>(this, v, distance);
+
+        this.neighbourhood.put(v, newEdge); // we override existing path, ignoring ratio of existing/previous distance
+        v.neighbourhood.put(this, newEdge);
+
+        return newEdge;
+    }
+
+    public Edge<T> removeConnectionTo(Vertex v) throws NoDirectEdgeException {
         if (!this.hasDirectConnection(v))
             throw new NoDirectEdgeException(this, v);
         if (!v.hasDirectConnection(this))
             throw new NoDirectEdgeException(v, this);
 
+        Edge<T> removedEdge = neighbourhood.get(v);
+
         this.neighbourhood.remove(v);
         v.neighbourhood.remove(this);
+
+        return  removedEdge;
     }
 
     public String getID() {
         return id;
     }
 
-    public HashMap<Vertex, T> getNeighbourhood() {
+    public HashMap<Vertex, Edge<T>> getNeighbourhood() {
         return neighbourhood;
     }
 
@@ -88,19 +103,20 @@ public class Vertex<T> {
         StringBuilder builder = new StringBuilder();
 
         builder
-                .append("Vertex ID:")
+                .append("Vertex{ID:")
                 .append(id)
-                .append(" with ")
+                .append(", ")
                 .append(neighbourhood.size())
-                .append(" connections:\n\t");
+                .append(" connections:");
 
         neighbourhood.entrySet().stream()
                 .forEach(neighbourEntry -> builder
+                        .append("\t")
                         .append(neighbourEntry.getKey().getID())
                         .append(" (")
-                        .append(neighbourEntry.getValue())
-                        .append(")\t"));
+                        .append(neighbourEntry.getValue().getWeight())
+                        .append(")"));
 
-        return builder.toString();
+        return builder.append("}").toString();
     }
 }
