@@ -17,10 +17,12 @@ import java.util.*;
  */
 public class Graph<T extends Number> {
 
-    private HashMap<String, Vertex<T>> vertexes;
+    private final HashMap<String, Vertex<T>> vertexes;
+    private final TreeSet<Edge<T>> edges; //sth about edge.equals may occur problematic, but should not!
 
     public Graph() {
         vertexes = new HashMap<>();
+        edges = new TreeSet<>();
     }
 
     public Vertex<T> addVertex() {
@@ -84,6 +86,10 @@ public class Graph<T extends Number> {
         return new LinkedList<>(vertexes.values());
     }
 
+    public TreeSet<Edge<T>> getAllNodes() {
+        return new TreeSet<>(edges);
+    }
+
     public void connect(Vertex<T> v1, Vertex<T> v2, T distance) throws NoSuchVertexException {
         if (!hasVertex(v1))
             throw new NoSuchVertexException(v1);
@@ -93,7 +99,8 @@ public class Graph<T extends Number> {
         v1 = vertexes.get(v1.getID());
         v2 = vertexes.get(v2.getID());
 
-        v1.addConnectionTo(v2, distance);
+        Edge<T> newEdge = v1.addConnectionTo(v2, distance);
+        edges.add(newEdge);
     }
 
     public void disconnect(Vertex<T> v1, Vertex<T> v2) throws NoSuchVertexException {
@@ -105,7 +112,8 @@ public class Graph<T extends Number> {
         v1 = vertexes.get(v1.getID());
         v2 = vertexes.get(v2.getID());
 
-        v1.removeConnectionTo(v2);
+        Edge<T> removedEdge = v1.removeConnectionTo(v2);
+        edges.remove(removedEdge);
     }
 
     public void assureMetric() {

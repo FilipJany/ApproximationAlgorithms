@@ -78,8 +78,8 @@ public class Vertex<T extends Number> {
 
     @Override
     public boolean equals(Object other) {
-        if (!(other instanceof Vertex))
-            return false;
+        if (this == other) return true;
+        if (other == null || getClass() != other.getClass()) return false;
 
         try {
             Vertex<T> otherVertex = (Vertex<T>) other;
