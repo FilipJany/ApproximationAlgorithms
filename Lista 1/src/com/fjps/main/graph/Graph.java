@@ -30,7 +30,7 @@ public class Graph<T extends Number> {
         int diff = 0;
 
         do {
-            v = new Vertex(vertexes.size() + diff++);
+            v = new Vertex<>(vertexes.size() + diff++);
         } while (vertexes.containsKey(v.getID()));
 
         vertexes.put(v.getID(), v);
@@ -86,8 +86,28 @@ public class Graph<T extends Number> {
         return new LinkedList<>(vertexes.values());
     }
 
-    public TreeSet<Edge<T>> getAllNodes() {
+    public int getNumberVertexes() {
+        return vertexes.size();
+    }
+
+    public TreeSet<Edge<T>> getAllEdges() {
         return new TreeSet<>(edges);
+    }
+
+    public int getNumberEdges() {
+        return edges.size();
+    }
+
+    public boolean isConnected(Vertex<T> v1, Vertex<T> v2) {
+        if (!hasVertex(v1))
+            throw new NoSuchVertexException(v1);
+        if (!hasVertex(v2))
+            throw new NoSuchVertexException(v2);
+
+        v1 = vertexes.get(v1.getID());
+        v2 = vertexes.get(v2.getID());
+
+        return v1.isReachable(v2);
     }
 
     public void connect(Vertex<T> v1, Vertex<T> v2, T distance) throws NoSuchVertexException {

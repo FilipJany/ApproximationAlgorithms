@@ -7,7 +7,7 @@ import com.fjps.main.graph.Vertex;
  *
  * Created by Patryk Stopyra on 22/03/16.
  */
-public class NoSuchVertexException extends Exception {
+public class NoSuchVertexException extends RuntimeException {
 
     public NoSuchVertexException(String id) {
         super("Vertex of ID: " + id + " does not exist in this graph.");

@@ -3,6 +3,8 @@ package com.fjps.main.graph;
 import com.fjps.main.graph.exceptions.NoDirectEdgeException;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Class representing single graph node.
@@ -29,6 +31,10 @@ public class Vertex<T extends Number> {
 
     public boolean hasDirectConnection(Vertex v) {
         return neighbourhood.containsKey(v);
+    }
+
+    public boolean isReachable(Vertex<T> v) {
+        return depthFirstSearch(new LinkedList<>(), v);
     }
 
     public Edge<T> getEdge(Vertex v) throws NoDirectEdgeException {
@@ -65,7 +71,7 @@ public class Vertex<T extends Number> {
         this.neighbourhood.remove(v);
         v.neighbourhood.remove(this);
 
-        return  removedEdge;
+        return removedEdge;
     }
 
     public String getID() {
@@ -82,15 +88,13 @@ public class Vertex<T extends Number> {
         if (other == null || getClass() != other.getClass()) return false;
 
         try {
-            Vertex<T> otherVertex = (Vertex<T>) other;
-            if (!otherVertex.id.equals(this.id)
-                    || !otherVertex.neighbourhood.equals(this.neighbourhood))
-                return false;
+            if (((Vertex<?>) other).id.equals(this.id))
+                return true;
         } catch (ClassCastException unused) {
-            return false;
+            // we fail as this exception occurs, thats the only wished behaviour
         }
 
-        return true;
+        return false;
     }
 
     @Override
@@ -118,5 +122,20 @@ public class Vertex<T extends Number> {
                         .append(")"));
 
         return builder.append("}").toString();
+    }
+
+    private boolean depthFirstSearch(List<Vertex<T>> visited, Vertex<T> dest) {
+        if (isReachable(dest))
+            return true;
+
+        visited.add(this);
+
+        for (Vertex v : neighbourhood.keySet()) {
+            if (!visited.contains(v))
+                if (v.depthFirstSearch(visited, dest))
+                    return true;
+        }
+
+        return false;
     }
 }
