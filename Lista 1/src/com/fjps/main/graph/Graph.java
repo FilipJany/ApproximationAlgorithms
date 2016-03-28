@@ -2,6 +2,7 @@ package com.fjps.main.graph;
 
 import com.fjps.main.graph.exceptions.InvalidVertexIDException;
 import com.fjps.main.graph.exceptions.NoSuchVertexException;
+import com.fjps.main.graph.exceptions.NoVerticesException;
 import com.fjps.main.graph.exceptions.VertexDuplicateException;
 
 import java.util.*;
@@ -23,6 +24,15 @@ public class Graph<T extends Number> {
     public Graph() {
         vertexes = new HashMap<>();
         edges = new TreeSet<>();
+
+    }
+
+    public Graph(int vertexAmount)
+    {
+        vertexes = new HashMap<>();
+        edges = new TreeSet<>();
+        for (int i = 0; i < vertexAmount; ++i)
+            addVertex();
     }
 
     public Vertex<T> addVertex() {
@@ -137,14 +147,35 @@ public class Graph<T extends Number> {
     }
 
     public void assureMetric() {
-        //TODO 1. Graf MUSI być spójny
-        //TODO 2. upewnić się, że graf jest pełny
+        //TODO 1. Graf MUSI być spójny - patrz pkt. 2.
+        //TODO 2. upewnić się, że graf jest pełny - generator generuje tylko takie
         // (uzupełnić brakujące krawędzie najkrótszymi ścieżkami pomiędzy parami wierzchołków)
-        //TODO 3. dla każdej pary wierzchołków krawędź pomiędzy nimi powinna być równa najkrótszej ścieżce.
+        //TODO 3. dla każdej pary wierzchołków krawędź pomiędzy nimi powinna być równa najkrótszej ścieżce. - done
         // (Jeżeli bezpośrednia krawędź jest dłuższa od najkrótszej ścieżki - należy zmienić wartość krawędzi na wartość
         // najkrótszej ścieżki)
 
         // Metoda powinna być wywoływana po dodaniu wszystkich wierzchołków.
+        System.out.println("Updating edge values...");
+        for (Vertex v: getAllVertexes())
+        {
+            Dijkstra.computePaths(v);
+            for (Object e : v.getNeighbourhood().values())
+            {
+                if(((Edge)(e)).getV2() != v)
+                    ((Edge)(e)).updateWeight(((Edge)(e)).getV2().getMinDistance());
+                if(((Edge)(e)).getV1() != v)
+                    ((Edge)(e)).updateWeight(((Edge)(e)).getV1().getMinDistance());
+            }
+            resetRound();
+        }
+        System.out.println("Successfully updated edges");
+        System.out.println(this);
+    }
+
+    private void resetRound()
+    {
+        for (Vertex v : getAllVertexes())
+            v.setMinDistance(Double.POSITIVE_INFINITY);
     }
 
     @Override

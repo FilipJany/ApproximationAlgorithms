@@ -42,7 +42,7 @@ public class Generator
             for (int i = 0; i < graphSize-1; ++i)
                 for (int j = i+1; j < graphSize; ++j)
                 {
-                    g.connect(verticles.get(i), verticles.get(j), rand.nextDouble()*rand.nextInt(50));
+                    g.connect(verticles.get(i), verticles.get(j), (rand.nextDouble()*rand.nextInt(50)) + rand.nextDouble());
                     iterator++;
                 }
             System.out.println("Successfully generated " + iterator + " edges.");

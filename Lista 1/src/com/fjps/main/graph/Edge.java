@@ -9,7 +9,7 @@ import com.fjps.main.graph.exceptions.WeightTypeNotSupported;
  */
 public class Edge<T extends Number> implements Comparable<Edge> {
 
-    private final T weight;
+    private T weight;
     private final Vertex<T> v1;
     private final Vertex<T> v2;
 
@@ -97,5 +97,8 @@ public class Edge<T extends Number> implements Comparable<Edge> {
         return v2.getID().compareTo(e.getV2().getID());
     }
 
-
+    public void updateWeight(T newWeight)
+    {
+        this.weight = newWeight;
+    }
 }

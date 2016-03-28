@@ -14,9 +14,11 @@ import java.util.List;
  * <p>
  * Created by Patryk Stopyra on 17/03/16.
  */
-public class Vertex<T extends Number> {
+public class Vertex<T extends Number> implements Comparable<Vertex>{
 
     private final String id;
+    private double minDistance = Double.POSITIVE_INFINITY;
+    private Vertex<T> previous;
     private final HashMap<Vertex, Edge<T>> neighbourhood;
 
     public Vertex(String id) {
@@ -137,5 +139,26 @@ public class Vertex<T extends Number> {
         }
 
         return false;
+    }
+
+    public double getMinDistance() {
+        return minDistance;
+    }
+
+    public void setMinDistance(double minDistance) {
+        this.minDistance = minDistance;
+    }
+
+    public void setPrevious(Vertex previous) {
+        this.previous = previous;
+    }
+
+    public Vertex getPrevious() {
+        return this.previous;
+    }
+
+    @Override
+    public int compareTo(Vertex o) {
+        return Double.compare(minDistance, o.minDistance);
     }
 }
