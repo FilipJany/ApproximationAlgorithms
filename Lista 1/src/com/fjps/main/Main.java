@@ -1,10 +1,14 @@
 package com.fjps.main;
 
 import com.fjps.main.calculation.TSPExactSolver;
+import com.fjps.main.graph.Edge;
 import com.fjps.main.graph.Generator;
 import com.fjps.main.graph.Graph;
 import com.fjps.main.graph.Vertex;
 import com.fjps.main.graph.exceptions.NoSuchVertexException;
+
+import java.util.DoubleSummaryStatistics;
+import java.util.List;
 
 /**
  * Main class of the List 1 program for Approximation Algorithms.
@@ -57,6 +61,7 @@ public class Main {
             System.out.print(e.getMessage());
         }
         TSPExactSolver t = new TSPExactSolver(gen.getG());
-        int[] path = t.calculate();
+        System.out.println("Optimal: " + t.calculateOptimum(gen.getG()));
+        List<Edge<Double>> edges = t.getLastOptimalPath();
     }
 }

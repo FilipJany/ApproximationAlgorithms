@@ -4,7 +4,8 @@ import com.fjps.main.calculation.helpers.Node;
 import com.fjps.main.graph.Edge;
 import com.fjps.main.graph.Graph;
 import com.fjps.main.graph.Vertex;
-import java.util.HashSet;
+
+import java.util.*;
 
 
 /**
@@ -29,10 +30,53 @@ public class TSPExactSolver<T extends Number> implements TravellingSalesmanProbl
 
     @Override
     public T calculateOptimum(Graph<T> graph) {
-        return null;
+        Double cost = 0.0;
+        int[] path = calculate();
+        for (int i = 0; i < path.length-1; i++)
+            cost += distances[path[i]][path[i+1]];
+        cost += distances[path[path.length-1]][path[0]];
+        return (T) Double.valueOf(cost);
     }
 
-    public int[] calculate() {
+    @Override
+    public List<Edge<T>> getLastOptimalPath()
+    {
+//        List<Edge<T>> edges = new LinkedList<>();
+//        TreeSet<Edge<T>> graphedges = (TreeSet<Edge<T>>)g.getAllEdges(); //TODO nie umiem tego zrobic i chuj
+//        for (int i = 0; i < best_path.length-1; i++)
+//        {
+//            for (Edge<T> e : graphedges)
+//            {
+//                if(Integer.parseInt(e.getV1().getID().substring(1)) == best_path[i] || Integer.parseInt(e.getV2().getID().substring(1)) == best_path[i+1])
+//                {
+//                    edges.add(e);
+//                }
+//                else if(Integer.parseInt(e.getV2().getID().substring(1)) == best_path[i] || Integer.parseInt(e.getV1().getID().substring(1)) == best_path[i+1])
+//                {
+//                    edges.add(e);
+//                }
+//            }
+//        }
+//        for (Edge<T> e : graphedges)
+//        {
+//            if(Integer.parseInt(e.getV1().getID().substring(1)) == best_path[best_path.length-1] || Integer.parseInt(e.getV2().getID().substring(1)) == best_path[0])
+//            {
+//                edges.add(e);
+//            }
+//            else if(Integer.parseInt(e.getV2().getID().substring(1)) == best_path[0] || Integer.parseInt(e.getV1().getID().substring(1)) == best_path[best_path.length-1])
+//            {
+//                edges.add(e);
+//            }
+//        }
+        return  null;
+    }
+
+    public int[] getBestPath()
+    {
+        return best_path;
+    }
+
+    private int[] calculate() {
         HashSet<Integer> location_set = new HashSet<Integer>(distances.length);
         for(int i = 0; i < distances.length; i++)
             location_set.add(i);
@@ -53,6 +97,13 @@ public class TSPExactSolver<T extends Number> implements TravellingSalesmanProbl
         return best_cost;
     }
 
+    /**
+     * Method founds cost by greedy algorithm - to check in B&B is correct
+     * @param i
+     * @param location_set
+     * @param distances
+     * @return
+     */
     private double findGreedyCost(int i, HashSet<Integer> location_set, double[][] distances) {
         if(location_set.isEmpty())
             return distances[0][i];
@@ -72,6 +123,10 @@ public class TSPExactSolver<T extends Number> implements TravellingSalesmanProbl
         return lowest + findGreedyCost(closest, location_set, distances);
     }
 
+    /**Traverses nodes in order to find proper (best) solution
+     *
+     * @param parent - node's parent
+     */
     private void traverse(Node parent) {
         Node[] children = parent.generateChildren();
 
@@ -89,6 +144,9 @@ public class TSPExactSolver<T extends Number> implements TravellingSalesmanProbl
         }
     }
 
+    /**Populates distances matrix with given costs
+     *
+     */
     private void populateMatrix()
     {
         if(distances.length != 0)
