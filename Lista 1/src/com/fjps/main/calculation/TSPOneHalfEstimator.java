@@ -1,7 +1,13 @@
 package com.fjps.main.calculation;
 
+import com.fjps.main.graph.Edge;
 import com.fjps.main.graph.Graph;
 import com.fjps.main.graph.Vertex;
+import com.fjps.main.graph.exceptions.WeightTypeNotSupported;
+
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Implementation of Christofies algorithm.
@@ -10,12 +16,20 @@ import com.fjps.main.graph.Vertex;
  */
 public class TSPOneHalfEstimator<T extends Number> implements TravellingSalesmanProblemSolver<T> {
 
+    private List<Edge<T>> lastOptimalPath;
+
     @Override
     public T calculateOptimum(Graph<T> graph) {
         Graph<T> mst = minimumSpanningTree(graph);
+        Graph<T> mpm = minimumPerfectMatching(indicedOddNeighbourhood(mst, graph));
 
+        lastOptimalPath = optimalPath(mst, mpm, graph);
 
-        return null;
+        return pathLength(lastOptimalPath);
+    }
+
+    public List<Edge<T>> getLastOptimalPath() {
+        return lastOptimalPath;
     }
 
     /**
@@ -62,10 +76,95 @@ public class TSPOneHalfEstimator<T extends Number> implements TravellingSalesman
 
         for (Vertex<T> v : odd.getAllVertexes())
             v.getNeighbourhood().keySet().stream()
-                    .filter(neighbour -> odd.hasVertex(v))
+                    .filter(neighbour -> odd.hasVertex(neighbour))
                     .map(neighbour -> v.getEdge(neighbour))
                     .forEach(edge -> odd.connect(edge.getV1(), edge.getV2(), edge.getWeight()));
 
         return odd;
+    }
+
+    private Graph<T> minimumPerfectMatching(Graph<T> graph) {
+        Graph<T> matching = new Graph<>();
+
+        return matching;
+    }
+
+    /**
+     * Algoritm to find Hamiltonian Path on given <code>multigraph</code> (consisting of minimum spanning tree over the original graph
+     * & minimum perfect matching over odd nodes of mst). Algoritm consists of two steps:<br>
+     * 1. Construct a circuit over the <code>multigraph</code>.<br>
+     * 2. Transformation of circuit to Hamilton cycle, by skipping twice visited node.
+     *
+     * @param mst      minimum sppaning tree - part of <code>multigraph</code>
+     * @param mpm      minimum perfect matching - part of <code>multigraph</code>
+     * @param original original graph - used to find lenghts of direct edges between nodes
+     * @return Estimated optimal path (1.5-estimation) for TSP.
+     */
+    private List<Edge<T>> optimalPath(Graph<T> mst, Graph<T> mpm, Graph<T> original) {
+        LinkedList<Edge<T>> path = new LinkedList<>();
+
+        Vertex<T> lastVertex = mst.getAllVertexes().get(0);
+        Edge<T> lastEdge = unvisitedEdge(
+                lastVertex.getNeighbourhood().values(),
+                mpm.getVertex(lastVertex.getID()).getNeighbourhood().values(),
+                path);
+
+        while (lastEdge != null) {
+            path.add(lastEdge);
+            if (lastEdge.getV1().equals(lastVertex))
+                lastVertex = lastEdge.getV2();
+            else
+                lastVertex = lastEdge.getV1();
+
+            lastEdge = unvisitedEdge(
+                    mst.getVertex(lastVertex.getID()).getNeighbourhood().values(),
+                    mpm.getVertex(lastVertex.getID()).getNeighbourhood().values(),
+                    path);
+        }
+
+        //skip nodes visited twice
+
+        return path;
+    }
+
+    private Edge<T> unvisitedEdge(Collection<Edge<T>> edges1, Collection<Edge<T>> edges2, List<Edge<T>> visited) {
+        Edge<T> unvisitedEdge = edges1.stream()
+                .filter(e -> !visited.contains(e))
+                .findFirst()
+                .orElse(null);
+
+        if (unvisitedEdge != null)
+            return unvisitedEdge;
+
+        unvisitedEdge = edges2.stream()
+                .filter(e -> !visited.contains(e))
+                .findFirst()
+                .orElse(null);
+
+        return unvisitedEdge;
+    }
+
+    private T pathLength(List<Edge<T>> path) throws WeightTypeNotSupported {
+        if (path.size() == 0)
+            return (T) Integer.valueOf(0);
+
+        T someWeight = path.get(0).getWeight();
+
+        if (someWeight instanceof Integer)
+            return (T) Integer.valueOf(path.stream()
+            .mapToInt(e -> e.getWeight().intValue())
+            .sum());
+
+        if (someWeight instanceof Long)
+            return (T) Long.valueOf(path.stream()
+                    .mapToLong(e -> e.getWeight().intValue())
+                    .sum());
+
+        if (someWeight instanceof Double)
+            return (T) Double.valueOf(path.stream()
+                    .mapToDouble(e -> e.getWeight().intValue())
+                    .sum());
+
+        throw new WeightTypeNotSupported("Type is not supported: " + someWeight.getClass() + ".");
     }
 }
