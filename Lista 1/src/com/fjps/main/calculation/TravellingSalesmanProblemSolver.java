@@ -1,6 +1,9 @@
 package com.fjps.main.calculation;
 
+import com.fjps.main.graph.Edge;
 import com.fjps.main.graph.Graph;
+
+import java.util.List;
 
 /**
  * Simple interface for solving/estimating TSP problem.
@@ -10,4 +13,6 @@ import com.fjps.main.graph.Graph;
 public interface TravellingSalesmanProblemSolver<T extends Number> {
 
     T calculateOptimum(Graph<T> graph);
+
+    public List<Edge<T>> getLastOptimalPath();
 }

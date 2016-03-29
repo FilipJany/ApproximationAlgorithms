@@ -101,16 +101,19 @@ public class TSPOneHalfEstimator<T extends Number> implements TravellingSalesman
      * @return Estimated optimal path (1.5-estimation) for TSP.
      */
     private List<Edge<T>> optimalPath(Graph<T> mst, Graph<T> mpm, Graph<T> original) {
-        LinkedList<Edge<T>> path = new LinkedList<>();
+        LinkedList<Edge<T>> edgesOrder = new LinkedList<>();
+        LinkedList<Vertex<T>> vertexOrder = new LinkedList<>();
 
         Vertex<T> lastVertex = mst.getAllVertexes().get(0);
         Edge<T> lastEdge = unvisitedEdge(
                 lastVertex.getNeighbourhood().values(),
                 mpm.getVertex(lastVertex.getID()).getNeighbourhood().values(),
-                path);
+                edgesOrder);
 
         while (lastEdge != null) {
-            path.add(lastEdge);
+            edgesOrder.add(lastEdge);
+            vertexOrder.add(lastVertex);
+
             if (lastEdge.getV1().equals(lastVertex))
                 lastVertex = lastEdge.getV2();
             else
@@ -119,12 +122,18 @@ public class TSPOneHalfEstimator<T extends Number> implements TravellingSalesman
             lastEdge = unvisitedEdge(
                     mst.getVertex(lastVertex.getID()).getNeighbourhood().values(),
                     mpm.getVertex(lastVertex.getID()).getNeighbourhood().values(),
-                    path);
+                    edgesOrder);
         }
 
-        //skip nodes visited twice
+        LinkedList<Vertex<T>> skippedVertexOrder = new LinkedList<>();
 
-        return path;
+        vertexOrder.stream()
+                .filter(v -> !skippedVertexOrder.contains(v))
+                .forEach(skippedVertexOrder::add);
+
+
+
+        return edgesOrder;
     }
 
     private Edge<T> unvisitedEdge(Collection<Edge<T>> edges1, Collection<Edge<T>> edges2, List<Edge<T>> visited) {
