@@ -7,6 +7,10 @@ import java.util.*;
  */
 public class Dijkstra
 {
+    /**
+     * Computes paths from source node to others using Dijkstra algorithm
+     * @param source - starting node
+     */
     public static void computePaths(Vertex source)
     {
         source.setMinDistance(0.0);
@@ -36,6 +40,11 @@ public class Dijkstra
         }
     }
 
+    /**
+     * Allows to select shortest path to selected(target) node
+     * @param target
+     * @return
+     */
     public static List<Vertex<Double>> getShortestPathTo(Vertex<Double> target)
     {
         List<Vertex<Double>> path = new ArrayList<Vertex<Double>>();
