@@ -6,6 +6,7 @@ import com.fjps.main.graph.Vertex;
 import com.fjps.main.graph.exceptions.WeightTypeNotSupported;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -75,7 +76,7 @@ public class TSPOneHalfEstimator<T extends Number> implements TravellingSalesman
                 .forEach(odd::addVertex);
 
         for (Vertex<T> v : odd.getAllVertexes())
-            v.getNeighbourhood().keySet().stream()
+            original.getVertex(v.getID()).getNeighbourhood().keySet().stream()
                     .filter(neighbour -> odd.hasVertex(neighbour))
                     .map(neighbour -> v.getEdge(neighbour))
                     .forEach(edge -> odd.connect(edge.getV1(), edge.getV2(), edge.getWeight()));
@@ -125,15 +126,13 @@ public class TSPOneHalfEstimator<T extends Number> implements TravellingSalesman
                     edgesOrder);
         }
 
-        LinkedList<Vertex<T>> skippedVertexOrder = new LinkedList<>();
+        LinkedList<Vertex<T>> uniqueVertexOrder = new LinkedList<>();
 
         vertexOrder.stream()
-                .filter(v -> !skippedVertexOrder.contains(v))
-                .forEach(skippedVertexOrder::add);
+                .filter(v -> !uniqueVertexOrder.contains(v))
+                .forEach(uniqueVertexOrder::add);
 
-
-
-        return edgesOrder;
+        return getRouteBetweenVertexes(uniqueVertexOrder, original);
     }
 
     private Edge<T> unvisitedEdge(Collection<Edge<T>> edges1, Collection<Edge<T>> edges2, List<Edge<T>> visited) {
@@ -161,8 +160,8 @@ public class TSPOneHalfEstimator<T extends Number> implements TravellingSalesman
 
         if (someWeight instanceof Integer)
             return (T) Integer.valueOf(path.stream()
-            .mapToInt(e -> e.getWeight().intValue())
-            .sum());
+                    .mapToInt(e -> e.getWeight().intValue())
+                    .sum());
 
         if (someWeight instanceof Long)
             return (T) Long.valueOf(path.stream()
@@ -175,5 +174,23 @@ public class TSPOneHalfEstimator<T extends Number> implements TravellingSalesman
                     .sum());
 
         throw new WeightTypeNotSupported("Type is not supported: " + someWeight.getClass() + ".");
+    }
+
+    private List<Edge<T>> getRouteBetweenVertexes(LinkedList<Vertex<T>> vertexes, Graph<T> graph) {
+        LinkedList<Edge<T>> route = new LinkedList<>();
+
+        Iterator<Vertex<T>> iter = vertexes.iterator();
+
+        Vertex<T> currentVertex = iter.next();
+        while (iter.hasNext()) {
+            Vertex<T> nextVertex = iter.next();
+            route.add(graph.getVertex(currentVertex.getID()).getEdge(nextVertex));
+            currentVertex = nextVertex;
+        }
+        route.add(graph
+                .getVertex(currentVertex.getID())
+                .getEdge(vertexes.getFirst()));
+
+        return route;
     }
 }
