@@ -29,6 +29,32 @@ public class TSPOneHalfEstimator<T extends Number> implements TravellingSalesman
         return pathLength(lastOptimalPath);
     }
 
+    @Override
+    public String getPathAsString() {
+        StringBuilder builder = new StringBuilder("path: ");
+
+        Iterator<Edge<T>> iter = lastOptimalPath.iterator();
+
+        Edge<T> currentEdge = iter.next();
+        while (iter.hasNext()) {
+            Edge<T> nextEdge = iter.next();
+
+            if (currentEdge.getV1().equals(nextEdge.getV1()) || currentEdge.getV1().equals(nextEdge.getV2()))
+                builder.append(currentEdge.getV1().getID()).append(" ");
+            else
+                builder.append(currentEdge.getV2().getID()).append(" ");
+
+            currentEdge = nextEdge;
+        }
+        if (currentEdge.getV1().equals(lastOptimalPath.get(0).getV1())
+                || currentEdge.getV1().equals(lastOptimalPath.get(0).getV2()))
+            builder.append(currentEdge.getV1().getID()).append(" ");
+        else
+            builder.append(currentEdge.getV2().getID()).append(" ");
+
+        return builder.toString();
+    }
+
     public List<Edge<T>> getLastOptimalPath() {
         return lastOptimalPath;
     }

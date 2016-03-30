@@ -13,29 +13,35 @@ import java.util.*;
  */
 public class TSPExactSolver<T extends Number> implements TravellingSalesmanProblemSolver<T>
 {
-    private Graph<Double> g;
+    private Graph<T> g;
     private double[][] distances;
     double best_cost;
     int[] best_path;
 
-    public TSPExactSolver(Graph<Double> g)
-    {
-        this.g = g;
+    @Override
+    public T calculateOptimum(Graph<T> graph) {
+        this.g = graph;
         distances = new double[g.getAllVertexes().size()][g.getAllVertexes().size()];
         for (int i = 0; i < distances.length; ++i)
             for (int j = 0; j < distances.length; ++j)
                 distances[i][j] = Double.POSITIVE_INFINITY;
         populateMatrix();
-    }
 
-    @Override
-    public T calculateOptimum(Graph<T> graph) {
         Double cost = 0.0;
         int[] path = calculate();
         for (int i = 0; i < path.length-1; i++)
             cost += distances[path[i]][path[i+1]];
         cost += distances[path[path.length-1]][path[0]];
         return (T) Double.valueOf(cost);
+    }
+
+    @Override
+    public String getPathAsString() {
+        StringBuilder builder = new StringBuilder("path: ");
+        for (int i : best_path)
+            builder.append("V").append(i).append(" ");
+
+        return builder.toString();
     }
 
     @Override
@@ -153,13 +159,13 @@ public class TSPExactSolver<T extends Number> implements TravellingSalesmanProbl
         {
             for (int i = 0; i < g.getAllVertexes().size(); ++i)
             {
-                Vertex<Double> vertex = g.getAllVertexes().get(i);
-                for (Edge<Double> edge: vertex.getNeighbourhood().values())
+                Vertex<T> vertex = g.getAllVertexes().get(i);
+                for (Edge<T> edge: vertex.getNeighbourhood().values())
                 {
                     int index1 = Integer.parseInt(edge.getV1().getID().substring(1));
                     int index2 = Integer.parseInt(edge.getV2().getID().substring(1));
-                    distances[index1][index2] = edge.getWeight();
-                    distances[index2][index1] = edge.getWeight();
+                    distances[index1][index2] = (Double) edge.getWeight();
+                    distances[index2][index1] = (Double) edge.getWeight();
                 }
             }
         }

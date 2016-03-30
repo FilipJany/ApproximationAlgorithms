@@ -14,5 +14,7 @@ public interface TravellingSalesmanProblemSolver<T extends Number> {
 
     T calculateOptimum(Graph<T> graph);
 
-    public List<Edge<T>> getLastOptimalPath();
+    List<Edge<T>> getLastOptimalPath();
+
+    String getPathAsString();
 }

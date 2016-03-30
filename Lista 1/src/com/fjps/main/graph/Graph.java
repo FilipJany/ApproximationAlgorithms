@@ -155,7 +155,6 @@ public class Graph<T extends Number> {
         // najkrótszej ścieżki)
 
         // Metoda powinna być wywoływana po dodaniu wszystkich wierzchołków.
-        System.out.println("Updating edge values...");
         for (Vertex v: getAllVertexes())
         {
             Dijkstra.computePaths(v);
@@ -168,8 +167,6 @@ public class Graph<T extends Number> {
             }
             resetRound();
         }
-        System.out.println("Successfully updated edges");
-        System.out.println(this);
     }
 
     private void resetRound()
@@ -187,7 +184,7 @@ public class Graph<T extends Number> {
                     .forEach(v -> builder.append(v).append("\n"));
         else
             vertexes.keySet().stream()
-                    .forEach(id -> builder.append(", ").append(id));
+                    .forEach(id -> builder.append(" ").append(id));
 
 
         return builder.toString();

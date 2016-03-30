@@ -5,10 +5,7 @@ import com.fjps.main.calculation.TSPOneHalfEstimator;
 import com.fjps.main.graph.Edge;
 import com.fjps.main.graph.Generator;
 import com.fjps.main.graph.Graph;
-import com.fjps.main.graph.Vertex;
-import com.fjps.main.graph.exceptions.NoSuchVertexException;
 
-import java.util.DoubleSummaryStatistics;
 import java.util.List;
 
 /**
@@ -51,22 +48,23 @@ public class Main {
 //        System.out.println("Removing vertex V1");
 //        System.out.println("Result:\n" + exampleGraph);
 
-        Generator gen = new Generator(5);
+        Generator gen = new Generator(30);
         gen.generateVertices();
         try
         {
             gen.generateEdges();
             gen.getG().assureMetric();
+            System.out.println(gen.getG());
         }
         catch (Exception e)
         {
             System.out.print(e.getMessage());
         }
-        TSPExactSolver t = new TSPExactSolver(gen.getG());
+        TSPExactSolver t = new TSPExactSolver();
         TSPOneHalfEstimator estimator = new TSPOneHalfEstimator();
 
-        System.out.println("Optimal: " + t.calculateOptimum(gen.getG()));
-        System.out.println("Estimated: " + estimator.calculateOptimum(gen.getG()));
+        //System.out.println("Optimal: " + t.calculateOptimum(gen.getG()) + "\n" + t.getPathAsString());
+        System.out.println("Estimated: " + estimator.calculateOptimum(gen.getG()) + "\n" + estimator.getPathAsString());
         List<Edge<Double>> edges = t.getLastOptimalPath();
     }
 }
