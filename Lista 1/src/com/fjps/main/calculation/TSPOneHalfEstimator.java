@@ -84,8 +84,38 @@ public class TSPOneHalfEstimator<T extends Number> implements TravellingSalesman
         return odd;
     }
 
+    /**
+     * Algorithm simplified to find perfect matching and use some basic heuristic to minimize it.
+     * <p>
+     * Full, polynomial-time exact algorithm is described at:
+     * <a href="https://courses.engr.illinois.edu/cs598csc/sp2010/Lectures/Lecture11.pdf">Illinois University Site</a>.
+     *
+     * @param graph graph to be used in perfect matching seek
+     * @return New graph containing all <code>graph</code>'s vertices and only these edges that are used in matching.
+     */
     private Graph<T> minimumPerfectMatching(Graph<T> graph) {
         Graph<T> matching = new Graph<>();
+
+        graph.getAllVertexes().stream()
+                .map(Vertex::getID)
+                .forEach(matching::addVertex);
+
+        Iterator<Vertex<T>> iter = graph.getAllVertexes().iterator();
+
+        while (iter.hasNext()) {
+            Vertex<T> currentVertex = iter.next();
+
+            if (matching.getVertex(currentVertex.getID()).getNeighbourhood().size() == 0) {
+                Edge<T> shortestEdge = null;
+
+               for (Edge<T> e : currentVertex.getNeighbourhood().values())
+                   if (shortestEdge == null || shortestEdge.compareTo(e) > 0)
+                       shortestEdge = e;
+
+                Vertex<T> nearestVertex = shortestEdge.getOtherVertex(currentVertex);
+                matching.connect(currentVertex, nearestVertex, shortestEdge.getWeight());
+            }
+        }
 
         return matching;
     }

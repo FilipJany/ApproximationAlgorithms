@@ -31,6 +31,10 @@ public class Edge<T extends Number> implements Comparable<Edge> {
         return v2;
     }
 
+    public Vertex<T> getOtherVertex(Vertex<T> v) {
+        return v.equals(v1) ? v2 : v1;
+    }
+
     @Override
     public int compareTo(Edge e) throws WeightTypeNotSupported {
         int weightComparison = compareWeights(e);
