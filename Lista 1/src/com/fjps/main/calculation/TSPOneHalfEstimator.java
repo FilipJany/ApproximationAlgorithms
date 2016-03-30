@@ -78,8 +78,8 @@ public class TSPOneHalfEstimator<T extends Number> implements TravellingSalesman
         for (Vertex<T> v : odd.getAllVertexes())
             original.getVertex(v.getID()).getNeighbourhood().keySet().stream()
                     .filter(neighbour -> odd.hasVertex(neighbour))
-                    .map(neighbour -> v.getEdge(neighbour))
-                    .forEach(edge -> odd.connect(edge.getV1(), edge.getV2(), edge.getWeight()));
+                    .map(neighbour -> original.getVertex(v.getID()).getEdge((Vertex) neighbour))
+                    .forEach(edge -> odd.connect(((Edge<T>) edge).getV1(), ((Edge<T>) edge).getV2(), ((Edge<T>) edge).getWeight()));
 
         return odd;
     }
@@ -135,10 +135,14 @@ public class TSPOneHalfEstimator<T extends Number> implements TravellingSalesman
         LinkedList<Edge<T>> edgesOrder = new LinkedList<>();
         LinkedList<Vertex<T>> vertexOrder = new LinkedList<>();
 
+
         Vertex<T> lastVertex = mst.getAllVertexes().get(0);
+        Collection<Edge<T>> mpmNeighbourhood = mpm.hasVertex(lastVertex) ?
+                mpm.getVertex(lastVertex.getID()).getNeighbourhood().values()
+                : new LinkedList<>();
         Edge<T> lastEdge = unvisitedEdge(
                 lastVertex.getNeighbourhood().values(),
-                mpm.getVertex(lastVertex.getID()).getNeighbourhood().values(),
+                mpmNeighbourhood,
                 edgesOrder);
 
         while (lastEdge != null) {
@@ -150,9 +154,12 @@ public class TSPOneHalfEstimator<T extends Number> implements TravellingSalesman
             else
                 lastVertex = lastEdge.getV1();
 
+            mpmNeighbourhood = mpm.hasVertex(lastVertex) ?
+                    mpm.getVertex(lastVertex.getID()).getNeighbourhood().values()
+                    : new LinkedList<>();
             lastEdge = unvisitedEdge(
                     mst.getVertex(lastVertex.getID()).getNeighbourhood().values(),
-                    mpm.getVertex(lastVertex.getID()).getNeighbourhood().values(),
+                    mpmNeighbourhood,
                     edgesOrder);
         }
 
@@ -188,19 +195,19 @@ public class TSPOneHalfEstimator<T extends Number> implements TravellingSalesman
 
         T someWeight = path.get(0).getWeight();
 
-        if (someWeight instanceof Integer)
-            return (T) Integer.valueOf(path.stream()
-                    .mapToInt(e -> e.getWeight().intValue())
+        if (someWeight instanceof Double)
+            return (T) Double.valueOf(path.stream()
+                    .mapToDouble(e -> e.getWeight().doubleValue())
                     .sum());
 
         if (someWeight instanceof Long)
             return (T) Long.valueOf(path.stream()
-                    .mapToLong(e -> e.getWeight().intValue())
+                    .mapToLong(e -> e.getWeight().longValue())
                     .sum());
 
-        if (someWeight instanceof Double)
-            return (T) Double.valueOf(path.stream()
-                    .mapToDouble(e -> e.getWeight().intValue())
+        if (someWeight instanceof Integer)
+            return (T) Integer.valueOf(path.stream()
+                    .mapToInt(e -> e.getWeight().intValue())
                     .sum());
 
         throw new WeightTypeNotSupported("Type is not supported: " + someWeight.getClass() + ".");

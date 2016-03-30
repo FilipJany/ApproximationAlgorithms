@@ -127,7 +127,7 @@ public class Vertex<T extends Number> implements Comparable<Vertex>{
     }
 
     private boolean depthFirstSearch(List<Vertex<T>> visited, Vertex<T> dest) {
-        if (isReachable(dest))
+        if (hasDirectConnection(dest))
             return true;
 
         visited.add(this);

@@ -1,6 +1,7 @@
 package com.fjps.main;
 
 import com.fjps.main.calculation.TSPExactSolver;
+import com.fjps.main.calculation.TSPOneHalfEstimator;
 import com.fjps.main.graph.Edge;
 import com.fjps.main.graph.Generator;
 import com.fjps.main.graph.Graph;
@@ -49,6 +50,7 @@ public class Main {
 //
 //        System.out.println("Removing vertex V1");
 //        System.out.println("Result:\n" + exampleGraph);
+
         Generator gen = new Generator(5);
         gen.generateVertices();
         try
@@ -61,7 +63,10 @@ public class Main {
             System.out.print(e.getMessage());
         }
         TSPExactSolver t = new TSPExactSolver(gen.getG());
+        TSPOneHalfEstimator estimator = new TSPOneHalfEstimator();
+
         System.out.println("Optimal: " + t.calculateOptimum(gen.getG()));
+        System.out.println("Estimated: " + estimator.calculateOptimum(gen.getG()));
         List<Edge<Double>> edges = t.getLastOptimalPath();
     }
 }
