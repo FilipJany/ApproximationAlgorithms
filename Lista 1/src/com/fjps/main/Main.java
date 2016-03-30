@@ -48,7 +48,7 @@ public class Main {
 //        System.out.println("Removing vertex V1");
 //        System.out.println("Result:\n" + exampleGraph);
 
-        Generator gen = new Generator(30);
+        Generator gen = new Generator(1);
         gen.generateVertices();
         try
         {

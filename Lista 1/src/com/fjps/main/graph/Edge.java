@@ -49,8 +49,8 @@ public class Edge<T extends Number> implements Comparable<Edge> {
     public String toString() {
         return "Edge{" +
                 "weight=" + weight +
-                ", v1=" + v1 +
-                ", v2=" + v2 +
+                ", v1=" + v1.getID() +
+                ", v2=" + v2.getID() +
                 '}';
     }
 
