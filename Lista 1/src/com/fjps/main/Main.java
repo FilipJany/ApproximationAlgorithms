@@ -48,7 +48,7 @@ public class Main {
 //        System.out.println("Removing vertex V1");
 //        System.out.println("Result:\n" + exampleGraph);
 
-        Generator gen = new Generator(1);
+        Generator gen = new Generator(5);
         gen.generateVertices();
         try
         {
@@ -63,7 +63,7 @@ public class Main {
         TSPExactSolver t = new TSPExactSolver();
         TSPOneHalfEstimator estimator = new TSPOneHalfEstimator();
 
-        //System.out.println("Optimal: " + t.calculateOptimum(gen.getG()) + "\n" + t.getPathAsString());
+        System.out.println("Optimal: " + t.calculateOptimum(gen.getG()) + "\n" + t.getPathAsString());
         System.out.println("Estimated: " + estimator.calculateOptimum(gen.getG()) + "\n" + estimator.getPathAsString());
         List<Edge<Double>> edges = t.getLastOptimalPath();
     }

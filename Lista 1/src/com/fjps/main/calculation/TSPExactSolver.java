@@ -1,9 +1,9 @@
 package com.fjps.main.calculation;
 
-import com.fjps.main.calculation.helpers.Node;
 import com.fjps.main.graph.Edge;
 import com.fjps.main.graph.Graph;
 import com.fjps.main.graph.Vertex;
+import com.fjps.main.graph.exceptions.InvalidVertexIDException;
 
 import java.util.*;
 
@@ -11,163 +11,152 @@ import java.util.*;
 /**
  * Created by Patryk Stopyra on 22/03/16.
  */
+
 public class TSPExactSolver<T extends Number> implements TravellingSalesmanProblemSolver<T>
 {
-    private Graph<T> g;
-    private double[][] distances;
-    double best_cost;
-    int[] best_path;
+    private Graph<T> graph;
+    private int[] path;
+    private Random r;
 
-    @Override
-    public T calculateOptimum(Graph<T> graph) {
-        this.g = graph;
-        distances = new double[g.getAllVertexes().size()][g.getAllVertexes().size()];
-        for (int i = 0; i < distances.length; ++i)
-            for (int j = 0; j < distances.length; ++j)
-                distances[i][j] = Double.POSITIVE_INFINITY;
-        populateMatrix();
+    private int[] getStartingSolution()
+    {
+        int[] newList = new int[path.length];
+        for (int i = 0; i < newList.length; ++i)
+            newList[i] = i;
+        Random r = new Random(System.currentTimeMillis());
+        for (int i = 0; i < newList.length; ++i)
+        {
+            int i1 = r.nextInt(newList.length);
+            int i2 = r.nextInt(newList.length);
+            int temp = newList[i1];
+            newList[i1] = newList[i2];
+            newList[i2] = temp;
+        }
+        return newList;
+    }
 
-        Double cost = 0.0;
-        int[] path = calculate();
-        for (int i = 0; i < path.length-1; i++)
-            cost += distances[path[i]][path[i+1]];
-        cost += distances[path[path.length-1]][path[0]];
-        return (T) Double.valueOf(cost);
+    private Double P(Double x0, Double x, Double temp)
+    {
+        return Math.min(1.0, Math.exp((-1)*(x - x0) / temp));
+    }
+
+    private int[] swapIndexes(int[] master, int x, int y)
+    {
+        int i1 = x;
+        int i2 = y;
+        if(i2 < i1)
+        {
+            int temp = i1;
+            i2 = i1;
+            i1 = temp;
+        }
+        List<Integer> newList = new ArrayList<>();
+        for (int l = 0; l < i1; ++l)
+            newList.add(master[l]);
+        for (int l = i2; l >= i1; --l)
+            newList.add(master[l]);
+        for (int l = i2+1; l < master.length; ++l)
+            newList.add(master[l]);
+        int[] listToReturn = new int[newList.size()];
+        for (int i = 0; i < listToReturn.length; ++i)
+            listToReturn[i] = newList.get(i);
+        return listToReturn;
+    }
+
+    private int[] getNeighbor(int[] master)
+    {
+        int i1 = r.nextInt(master.length);
+        int i2 = r.nextInt(master.length);
+        while ( i1 == i2)
+        {
+            i2 = r.nextInt(master.length);
+        }
+        return swapIndexes(master, i1, i2);
+    }
+
+    private int getIdFromString(Vertex<T> v)
+    {
+        return Integer.parseInt(v.getID().substring(1));
+    }
+
+    private Double getLength(int[] array)
+    {
+        Double sum = 0.0;
+        List<Vertex<T>> verticles = graph.getAllVertexes();
+        List<Edge<T>> edges = new LinkedList<>(graph.getAllEdges());
+        for (int i = 0; i < array.length-1; ++i)
+        {
+            for (Edge<T> e : edges)
+            {
+                int v1 = getIdFromString(e.getV1());
+                int v2 = getIdFromString(e.getV2());
+                if(v1 == array[i] && v2 == array[i+1])
+                    sum += (Double) e.getWeight();
+                if(v1 == array[i+1] && v2 == array[i])
+                    sum += (Double)e.getWeight();
+            }
+        }
+        for (Edge<T> e : edges)
+        {
+            int v1 = getIdFromString(e.getV1());
+            int v2 = getIdFromString(e.getV2());
+            if(v1 == array[0] && v2 == array[array.length-1])
+                sum += (Double)e.getWeight();
+            if(v1 == array[array.length-1] && v2 == array[0])
+                sum += (Double)e.getWeight();
+        }
+        return sum;
+    }
+
+    private void solve(Double startTemp, Double delta, int iterations)
+    {
+        int[] x0 = getStartingSolution();
+        int[] xopt = x0.clone();
+        int[] x = x0.clone();
+        double temp = startTemp;
+        int iter = 0;
+
+        while(iter < iterations)
+        {
+            x = getNeighbor(x0);
+            Double x0Len = getLength(x0);
+            Double xLen = getLength(x);
+            if((r.nextDouble() % 1.0) < P(x0Len, xLen, temp))
+            {
+                x0 = x.clone();
+                if(getLength(x0) < getLength(xopt))
+                {
+                    xopt = x0.clone();
+                }
+            }
+            temp *= delta;
+            ++iter;
+        }
+        path = xopt.clone();
     }
 
     @Override
-    public String getPathAsString() {
-        StringBuilder builder = new StringBuilder("path: ");
-        for (int i : best_path)
-            builder.append("V").append(i).append(" ");
+    public T calculateOptimum(Graph<T> graph)
+    {
+        r = new Random(System.currentTimeMillis());
+        this.graph = graph;
+        path = new int[graph.getNumberVertexes()];
+        solve(10000.0, 0.999, 100000);
+        return  (T)getLength(path);
+    }
 
-        return builder.toString();
+    @Override
+    public String getPathAsString()
+    {
+        StringBuilder builder = new StringBuilder("");
+        for (int i = 0; i < path.length; ++i)
+            builder.append("V").append(path[i]).append(" ");
+        return  builder.toString();
     }
 
     @Override
     public List<Edge<T>> getLastOptimalPath()
     {
-//        List<Edge<T>> edges = new LinkedList<>();
-//        TreeSet<Edge<T>> graphedges = (TreeSet<Edge<T>>)g.getAllEdges(); //TODO nie umiem tego zrobic i chuj
-//        for (int i = 0; i < best_path.length-1; i++)
-//        {
-//            for (Edge<T> e : graphedges)
-//            {
-//                if(Integer.parseInt(e.getV1().getID().substring(1)) == best_path[i] || Integer.parseInt(e.getV2().getID().substring(1)) == best_path[i+1])
-//                {
-//                    edges.add(e);
-//                }
-//                else if(Integer.parseInt(e.getV2().getID().substring(1)) == best_path[i] || Integer.parseInt(e.getV1().getID().substring(1)) == best_path[i+1])
-//                {
-//                    edges.add(e);
-//                }
-//            }
-//        }
-//        for (Edge<T> e : graphedges)
-//        {
-//            if(Integer.parseInt(e.getV1().getID().substring(1)) == best_path[best_path.length-1] || Integer.parseInt(e.getV2().getID().substring(1)) == best_path[0])
-//            {
-//                edges.add(e);
-//            }
-//            else if(Integer.parseInt(e.getV2().getID().substring(1)) == best_path[0] || Integer.parseInt(e.getV1().getID().substring(1)) == best_path[best_path.length-1])
-//            {
-//                edges.add(e);
-//            }
-//        }
         return  null;
-    }
-
-    public int[] getBestPath()
-    {
-        return best_path;
-    }
-
-    private int[] calculate() {
-        HashSet<Integer> location_set = new HashSet<Integer>(distances.length);
-        for(int i = 0; i < distances.length; i++)
-            location_set.add(i);
-
-        best_cost = findGreedyCost(0, location_set, distances);
-
-        int[] active_set = new int[distances.length];
-        for(int i = 0; i < active_set.length; i++)
-            active_set[i] = i;
-
-        Node root = new Node(null, 0, distances, active_set, 0);
-        traverse(root);
-
-        return best_path;
-    }
-
-    public double getCost() {
-        return best_cost;
-    }
-
-    /**
-     * Method founds cost by greedy algorithm - to check in B&B is correct
-     * @param i
-     * @param location_set
-     * @param distances
-     * @return
-     */
-    private double findGreedyCost(int i, HashSet<Integer> location_set, double[][] distances) {
-        if(location_set.isEmpty())
-            return distances[0][i];
-
-        location_set.remove(i);
-
-        double lowest = Double.MAX_VALUE;
-        int closest = 0;
-        for(int location : location_set) {
-            double cost = distances[i][location];
-            if(cost < lowest) {
-                lowest = cost;
-                closest = location;
-            }
-        }
-
-        return lowest + findGreedyCost(closest, location_set, distances);
-    }
-
-    /**Traverses nodes in order to find proper (best) solution
-     *
-     * @param parent - node's parent
-     */
-    private void traverse(Node parent) {
-        Node[] children = parent.generateChildren();
-
-        for(Node child : children) {
-            if(child.isTerminal()) {
-                double cost = child.getPathCost();
-                if(cost < best_cost) {
-                    best_cost = cost;
-                    best_path = child.getPath();
-                }
-            }
-            else if(child.getLowerBound() <= best_cost) {
-                traverse(child);
-            }
-        }
-    }
-
-    /**Populates distances matrix with given costs
-     *
-     */
-    private void populateMatrix()
-    {
-        if(distances.length != 0)
-        {
-            for (int i = 0; i < g.getAllVertexes().size(); ++i)
-            {
-                Vertex<T> vertex = g.getAllVertexes().get(i);
-                for (Edge<T> edge: vertex.getNeighbourhood().values())
-                {
-                    int index1 = Integer.parseInt(edge.getV1().getID().substring(1));
-                    int index2 = Integer.parseInt(edge.getV2().getID().substring(1));
-                    distances[index1][index2] = (Double) edge.getWeight();
-                    distances[index2][index1] = (Double) edge.getWeight();
-                }
-            }
-        }
     }
 }
