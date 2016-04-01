@@ -66,7 +66,7 @@ public class Graph<T extends Number> {
         v = vertexes.get(v.getID()); // to ensure that v is a vertex from a graph, not an alien clone
 
         for (Vertex<T> neighbour : new HashSet<>(v.getNeighbourhood().keySet()))
-            v.removeConnectionTo(neighbour);
+            neighbour.removeConnectionTo(v);
         vertexes.remove(v.getID());
     }
 
@@ -146,15 +146,11 @@ public class Graph<T extends Number> {
         edges.remove(removedEdge);
     }
 
+    /**
+     * Assures metric of all nodes connections. Should be invoked after all vertexes and connections
+     * for TSP counting are already added.
+     */
     public void assureMetric() {
-        //TODO 1. Graf MUSI być spójny - patrz pkt. 2.
-        //TODO 2. upewnić się, że graf jest pełny - generator generuje tylko takie
-        // (uzupełnić brakujące krawędzie najkrótszymi ścieżkami pomiędzy parami wierzchołków)
-        //TODO 3. dla każdej pary wierzchołków krawędź pomiędzy nimi powinna być równa najkrótszej ścieżce. - done
-        // (Jeżeli bezpośrednia krawędź jest dłuższa od najkrótszej ścieżki - należy zmienić wartość krawędzi na wartość
-        // najkrótszej ścieżki)
-
-        // Metoda powinna być wywoływana po dodaniu wszystkich wierzchołków.
         for (Vertex v: getAllVertexes())
         {
             Dijkstra.computePaths(v);

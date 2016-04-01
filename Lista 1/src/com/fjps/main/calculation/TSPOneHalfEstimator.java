@@ -147,7 +147,9 @@ public class TSPOneHalfEstimator<T extends Number> implements TravellingSalesman
      * @return Estimated optimal path (1.5-estimation) for TSP.
      */
     private List<Edge<T>> optimalPath(Graph<T> mst, Graph<T> mpm, Graph<T> original) {
-        List<Edge<T>> edgesOrder = searchFullPath(mst.getAllVertexes().get(0), new LinkedList<>(), mst, mpm);
+        List<Edge<T>> edgesOrder = searchFullPath(
+                mst.getAllVertexes().get(0),
+                new LinkedList<>(), mst, mpm);
         List<Vertex<T>> verticesOrder = getVerticesFromRoute(edgesOrder);
 
         LinkedList<Vertex<T>> uniqueVertexOrder = new LinkedList<>();
@@ -244,6 +246,41 @@ public class TSPOneHalfEstimator<T extends Number> implements TravellingSalesman
         return alreadyVisited;
     }
 
+//    private List<Edge<T>> searchFullPath(Vertex<T> currentVertex1, Vertex<T> currentVertex2, List<Edge<T>> alreadyVisited,
+//                                         Graph<T> mst, Graph<T> mpm) {
+//        Collection<Edge<T>> mstNeighbourhood = mst.getVertex(currentVertex1.getID()).getNeighbourhood().values();
+//        Collection<Edge<T>> mpmNeighbourhood = mpm.hasVertex(currentVertex1) ?
+//                mpm.getVertex(currentVertex1.getID()).getNeighbourhood().values()
+//                : new LinkedList<>();
+//        List<Edge<T>> prospectiveV1 = unusedEdges(mstNeighbourhood, mpmNeighbourhood, alreadyVisited);
+//
+//        mstNeighbourhood = mst.getVertex(currentVertex2.getID()).getNeighbourhood().values();
+//        mpmNeighbourhood = mpm.hasVertex(currentVertex2) ?
+//                mpm.getVertex(currentVertex2.getID()).getNeighbourhood().values()
+//                : new LinkedList<>();
+//        List<Edge<T>> prospectiveV2 = unusedEdges(mstNeighbourhood, mpmNeighbourhood, alreadyVisited);
+//
+//        if (prospectiveV1.size() == 0 || prospectiveV2.size() == 0)
+//            return alreadyVisited;
+//
+//        Edge<T> decisionV1 = prospectiveV1.get(0);
+//        Edge<T> decisionV2 = prospectiveV2.get(0);
+//
+//        if (decisionV2.getOtherVertex(currentVertex2).equals(decisionV1.getOtherVertex(currentVertex1)))
+//            if (prospectiveV2.size() > 1)
+//                decisionV2 = prospectiveV2.get(1);
+//            else if (prospectiveV1.size() > 1)
+//                decisionV1 = prospectiveV1.get(1);
+//
+//        alreadyVisited.add(0, decisionV1);
+//        alreadyVisited.add(decisionV2);
+//
+//        return searchFullPath(
+//                decisionV1.getOtherVertex(currentVertex1),
+//                decisionV2.getOtherVertex(currentVertex2),
+//                alreadyVisited, mst, mpm);
+//    }
+
     private List<Edge<T>> unusedEdges(Collection<Edge<T>> edges1, Collection<Edge<T>> edges2, List<Edge<T>> visited) {
         LinkedList<Edge<T>> unvisited = new LinkedList<>();
 
@@ -252,7 +289,7 @@ public class TSPOneHalfEstimator<T extends Number> implements TravellingSalesman
                 .forEach(unvisited::add);
 
         edges2.stream()
-                .filter(e -> !visited.contains(e) || (edges1.contains(e) && visited.indexOf(e)==visited.lastIndexOf(e)))
+                .filter(e -> !visited.contains(e) || (edges1.contains(e) && visited.indexOf(e) == visited.lastIndexOf(e)))
                 .forEach(unvisited::add);
 
         return unvisited;

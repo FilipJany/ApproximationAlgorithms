@@ -10,6 +10,8 @@ import com.fjps.main.graph.Vertex;
  */
 public class TestUtils {
 
+    private static final long NANO = 1000000000;
+
     public static Graph<Double> getKnownGraph1() {
         Graph<Double> graph = new Graph<>();
 
@@ -53,5 +55,15 @@ public class TestUtils {
         graph.assureMetric();
 
         return graph;
+    }
+
+    public static String format(long nanos) {
+        long sec = Math.abs(nanos / NANO);
+        return String.format(
+                "%d:%02d:%02d.%03d",
+                sec / 3600,
+                (sec % 3600) / 60,
+                sec % 60,
+                (nanos / 1000000) % 1000);
     }
 }

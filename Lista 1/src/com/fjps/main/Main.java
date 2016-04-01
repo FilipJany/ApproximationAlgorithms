@@ -2,11 +2,8 @@ package com.fjps.main;
 
 import com.fjps.main.calculation.TSPExactSolver;
 import com.fjps.main.calculation.TSPOneHalfEstimator;
-import com.fjps.main.graph.Edge;
 import com.fjps.main.graph.Generator;
 import com.fjps.main.graph.Graph;
-
-import java.util.List;
 
 /**
  * Main class of the List 1 program for Approximation Algorithms.
@@ -18,53 +15,65 @@ import java.util.List;
  */
 public class Main {
 
-    public static void main(String[] args) {
-        Graph<Double> exampleGraph = new Graph<>();
-//
-//        Vertex<Double> v0 = exampleGraph.addVertex();
-//        Vertex<Double> v1 = exampleGraph.addVertex();
-//        Vertex<Double> v2 = exampleGraph.addVertex();
-//        Vertex<Double> v3 = exampleGraph.addVertex();
-//
-//        try {
-//            exampleGraph.connect(v0, v1, 3.0);
-//            exampleGraph.connect(v0, v2, 1.8);
-//            exampleGraph.connect(v0, v3, 2.2);
-//            exampleGraph.connect(v2, v1, 4.7);
-//            exampleGraph.connect(v2, v3, 5.2);
-//            exampleGraph.connect(v3, v1, 0.5);
-//        } catch (NoSuchVertexException e) {
-//            System.out.println("This exception should not occur.\n\t" + e.getMessage());
-//        }
-//
-//        System.out.println("Result:\n" + exampleGraph);
-//        exampleGraph.assureMetric();
-//        try {
-//            exampleGraph.removeVertex(v1);
-//        } catch (NoSuchVertexException e) {
-//            System.out.println("This exception should not occur.\n\t" + e.getMessage());
-//        }
-//
-//        System.out.println("Removing vertex V1");
-//        System.out.println("Result:\n" + exampleGraph);
+    private static final long NANO = 1000000000;
 
-        Generator gen = new Generator(5);
+    public static void main(String[] args) {
+        Generator gen = new Generator(50);
         gen.generateVertices();
         try
         {
             gen.generateEdges();
             gen.getG().assureMetric();
-            System.out.println(gen.getG());
+            System.out.println("Successfully Generated graph with "
+                    + gen.getG().getNumberVertexes() + " vertexes and "
+                    + gen.getG().getNumberEdges() + " edges.");
         }
         catch (Exception e)
         {
             System.out.print(e.getMessage());
         }
-        TSPExactSolver t = new TSPExactSolver();
-        TSPOneHalfEstimator estimator = new TSPOneHalfEstimator();
 
-        System.out.println("Optimal: " + t.calculateOptimum(gen.getG()) + "\n" + t.getPathAsString());
-        System.out.println("Estimated: " + estimator.calculateOptimum(gen.getG()) + "\n" + estimator.getPathAsString());
-        List<Edge<Double>> edges = t.getLastOptimalPath();
+        System.out.println();
+        //long exactResult = calculateBySolver(gen.getG());
+        long estimatedResult = calculateByEstimator(gen.getG());
+
+        System.out.println();
+        System.out.println("Exact result calculation time:     " + "NOT CALCULATED");//format(exactResult));
+        System.out.println("Estimated result calculation time: " + format(estimatedResult));
+
+    }
+
+    private static long calculateBySolver(Graph<Double> graph) {
+        TSPExactSolver<Double> solver = new TSPExactSolver<>();
+
+        long start = System.nanoTime();
+        double result = solver.calculateOptimum(graph);
+        long end = System.nanoTime();
+
+        System.out.println("Exact optimal:     " + result + "\n" + solver.getPathAsString());
+
+        return end - start;
+    }
+
+    private static long calculateByEstimator(Graph<Double> graph) {
+        TSPOneHalfEstimator<Double> estimator = new TSPOneHalfEstimator<>();
+
+        long start = System.nanoTime();
+        double result = estimator.calculateOptimum(graph);
+        long end = System.nanoTime();
+
+        System.out.println("Estimated optimal: " + result + "\n" + estimator.getPathAsString());
+
+        return end - start;
+    }
+
+    public static String format(long nanos) {
+        long sec = Math.abs(nanos / NANO);
+        return String.format(
+                "%d:%02d:%02d.%03d",
+                sec / 3600,
+                (sec % 3600) / 60,
+                sec % 60,
+                (nanos / 1000000) % 1000);
     }
 }

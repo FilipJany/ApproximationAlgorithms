@@ -148,7 +148,7 @@ public class TSPExactSolver<T extends Number> implements TravellingSalesmanProbl
     @Override
     public String getPathAsString()
     {
-        StringBuilder builder = new StringBuilder("");
+        StringBuilder builder = new StringBuilder("path: ");
         for (int i = 0; i < path.length; ++i)
             builder.append("V").append(path[i]).append(" ");
         return  builder.toString();

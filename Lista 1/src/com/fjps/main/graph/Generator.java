@@ -11,6 +11,8 @@ import java.util.Random;
  */
 public class Generator
 {
+    private static int iterator = 0;
+
     private Graph<Double> g;
     private List<Vertex<Double>> verticles;
     private final int graphSize;
@@ -37,16 +39,13 @@ public class Generator
             throw new NoVerticesException();
         else
         {
-            Random rand = new Random(System.currentTimeMillis());
-            int iterator = 0;
+            Random rand = new Random(System.currentTimeMillis() * (iterator % 10 + 1));
             for (int i = 0; i < graphSize-1; ++i)
                 for (int j = i+1; j < graphSize; ++j)
                 {
                     g.connect(verticles.get(i), verticles.get(j), (rand.nextDouble()*rand.nextInt(50)) + rand.nextDouble());
                     iterator++;
                 }
-            System.out.println("Successfully generated " + iterator + " edges.");
-            System.out.println(g);
         }
     }
 

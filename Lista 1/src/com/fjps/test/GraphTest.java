@@ -2,6 +2,7 @@ package com.fjps.test;
 
 import com.fjps.main.graph.Graph;
 import com.fjps.main.graph.Vertex;
+import com.fjps.main.graph.exceptions.NoSuchVertexException;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -108,5 +109,48 @@ public class GraphTest {
 
         Assert.assertEquals(expected.getAllVertexes(), obtained.getAllVertexes());
         Assert.assertEquals(expected.getAllEdges(), obtained.getAllEdges());
+    }
+
+    @Test
+    public void graphOperationsTest1() {
+        System.out.println("\n-----------------\nGraphTest: Test 3\n-----------------\n");
+
+        Graph<Double> graph = new Graph<>();
+
+        Vertex<Double> v0 = graph.addVertex();
+        Vertex<Double> v1 = graph.addVertex();
+        Vertex<Double> v2 = graph.addVertex();
+        Vertex<Double> v3 = graph.addVertex();
+
+        Assert.assertEquals(4, graph.getNumberVertexes());
+
+        try {
+            graph.connect(v0, v1, 3.0);
+            graph.connect(v0, v2, 1.8);
+            graph.connect(v0, v3, 2.2);
+            graph.connect(v2, v1, 4.7);
+            graph.connect(v2, v3, 5.2);
+            graph.connect(v3, v1, 0.5);
+        } catch (NoSuchVertexException e) {
+            System.out.println("This exception should not occur.\n\t" + e.getMessage());
+        }
+
+        Assert.assertEquals(6, graph.getNumberEdges());
+
+        System.out.println("Result:\n" + graph);
+        graph.assureMetric();
+        try {
+            graph.removeVertex(v1);
+        } catch (NoSuchVertexException e) {
+            System.out.println("This exception should not occur.\n\t" + e.getMessage());
+        }
+
+        Assert.assertEquals(3, graph.getNumberVertexes());
+        Assert.assertEquals(3, graph.getNumberEdges());
+        Assert.assertEquals(null, graph.getVertex(v1.getID()));
+
+        System.out.println("Removing vertex V1");
+        System.out.println("Result:\n" + graph);
+
     }
 }
